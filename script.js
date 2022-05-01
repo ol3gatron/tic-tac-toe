@@ -56,6 +56,14 @@ const gameBoard = (() => {
     container.insertBefore(div, field)
   }
 
+  const showWhosTurn = function(player) {
+    const div = document.createElement("div")
+    div.appendChild(document.createTextNode(`${player.name} turn`))
+    const container = document.querySelector(".container")
+    const field = document.querySelector(".field")
+    container.insertBefore(div, field)
+  }
+
   const gameArray = []
 
 
@@ -66,7 +74,25 @@ const gameBoard = (() => {
     placeMarker,
     tieCheck,
     showAlert,
+    showWhosTurn,
     gameArray,
+  }
+})()
+
+const welcomePlayerOne = (() => {
+  const init = function() {
+    const welcome = document.createElement("div")
+    const input = document.createElement("input")
+
+    welcome.textContent = "Player One enter your name..."
+
+    const container = document.querySelector(".container")
+    container.appendChild(welcome)
+    container.appendChild(input)
+  }
+
+  return {
+    init
   }
 })()
 
@@ -81,6 +107,8 @@ const Player1 = playerFactory("Vasiliy", "X");
 // Player 2 with the marker "O"
 const Player2 = playerFactory("Alexey", "O");
 
+welcomePlayerOne.init()
+
 // Creating of field filld with field-items
 gameBoard.init()
 
@@ -88,9 +116,13 @@ gameBoard.init()
 gameBoard.fillBoard(gameBoard.gameArray)
 
 let currentPlayer = Player1;
+gameBoard.showWhosTurn(currentPlayer)
 
 document.querySelector(".field").addEventListener("click", function(e) {
+  gameBoard.showWhosTurn(currentPlayer)
+
   if (!gameBoard.gameArray[e.target.attributes.dataKey.value]) {
+
     if (e.target.className === "field-item") {
       gameBoard.placeMarker(e, currentPlayer.marker)
     }
@@ -99,8 +131,8 @@ document.querySelector(".field").addEventListener("click", function(e) {
       gameBoard.showAlert(`${currentPlayer.name} has won!`, "success")
     }
 
-    if (gameBoard.tieCheck(gameBoard.gameArray)) {
-      gameBoard.showAlert("It's aaaaaaaaaaaaaaaaa tie!", "tie")
+    if (gameBoard.tieCheck(gameBoard.gameArray) && !gameBoard.winCheck(currentPlayer, gameBoard.gameArray)) {
+      gameBoard.showAlert("It's a tie!", "tie")
     }
 
 
