@@ -14,6 +14,12 @@ body {
   align-items: center;
 }
 
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .x {
   color: red;
 }
@@ -25,16 +31,18 @@ body {
 .field {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  width: 270px;
+  height: 270px;
 }
 
 .field-item {
-  height: 50px;
-  width: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 24px;
   font-weight: bold;
+  width: 90px;
+  height: 90px;
 }
 
 .field-item:first-child {
@@ -71,4 +79,22 @@ body {
 
 .field-item:nth-child(8) {
   border-right: 1px solid black;
+}
+
+.success {
+  color: white;
+  background-color: green;
+  text-align: center;
+  margin: 10px;
+  border-radius: 3px;
+  height: 30px;
+}
+
+.tie {
+  color: white;
+  background-color: yellowgreen;
+  text-align: center;
+  margin: 10px;
+  border-radius: 3px;
+  height: 30px;
 }
