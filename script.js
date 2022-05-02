@@ -42,7 +42,16 @@ const gameBoard = (() => {
   }
 
   const placeMarker = function(e, target) {
+    if (target == "X") {
+      e.target.style.color = "red"
+    } else {
+      e.target.style.color = "blue"
+    }
+
+
     e.target.textContent = target
+
+
     gameBoard.gameArray[e.target.attributes.dataKey.value] = target
   }
 
@@ -139,6 +148,14 @@ document.querySelector(".container").addEventListener("click", function(e) {
 
       if (gameBoard.tieCheck(gameBoard.gameArray) && !gameBoard.winCheck(currentPlayer, gameBoard.gameArray)) {
         gameBoard.showAlert("It's a tie!", "tie")
+
+        if (document.querySelector(".playerOne")) {
+          document.querySelector(".playerOne").remove()
+        } else {
+          document.querySelector(".playerTwo").remove()
+        }
+
+        gameBoard.reset()
       }
 
       if (currentPlayer == Player1) {
@@ -165,8 +182,12 @@ document.querySelector(".container").addEventListener("click", function(e) {
     gameBoard.gameArray = []
     document.querySelector(".field").remove()
     gameBoard.init()
+    if (document.querySelector(".success")) {
+      document.querySelector(".success").remove()
+    } else if (document.querySelector(".tie")) {
+      document.querySelector(".tie").remove()
+    }
     document.querySelector(".reset").remove()
-    document.querySelector(".success").remove()
     gameBoard.showWhosTurn(currentPlayer)
     currentPlayer = Player1
     document.querySelector(".playerTwo").textContent = "Player One's turn"
