@@ -44,12 +44,11 @@ const gameBoard = (() => {
   const placeMarker = function(e, target) {
     e.target.textContent = target
     gameBoard.gameArray[e.target.attributes.dataKey.value] = target
-    console.log(e.target.attributes.dataKey.value)
   }
 
   const showAlert = function(message, className) {
     const div = document.createElement("div")
-    div.className = `alert ${className}`
+    div.className = `${className}`
     div.appendChild(document.createTextNode(message))
     const container = document.querySelector(".container")
     const field = document.querySelector(".field")
@@ -58,10 +57,23 @@ const gameBoard = (() => {
 
   const showWhosTurn = function(player) {
     const div = document.createElement("div")
-    div.appendChild(document.createTextNode(`${player.name} turn`))
+    if (player.name == "Player One") {
+      div.className = "alert playerOne"
+    } else {
+      div.className = "alert playerTwo"
+    }
+    div.appendChild(document.createTextNode(`${player.name}'s turn`))
     const container = document.querySelector(".container")
     const field = document.querySelector(".field")
     container.insertBefore(div, field)
+  }
+
+  const reset = function(array) {
+    const resetBtn = document.createElement("button")
+    resetBtn.className = "reset"
+    resetBtn.textContent = "Play Again"
+    const container = document.querySelector(".container")
+    container.appendChild(resetBtn)
   }
 
   const gameArray = []
@@ -75,24 +87,8 @@ const gameBoard = (() => {
     tieCheck,
     showAlert,
     showWhosTurn,
+    reset,
     gameArray,
-  }
-})()
-
-const welcomePlayerOne = (() => {
-  const init = function() {
-    const welcome = document.createElement("div")
-    const input = document.createElement("input")
-
-    welcome.textContent = "Player One enter your name..."
-
-    const container = document.querySelector(".container")
-    container.appendChild(welcome)
-    container.appendChild(input)
-  }
-
-  return {
-    init
   }
 })()
 
@@ -102,12 +98,10 @@ const playerFactory = (name, marker) => {
 };
 
 // Player 1 with the marker "X"
-const Player1 = playerFactory("Vasiliy", "X");
+const Player1 = playerFactory("Player One", "X");
 
 // Player 2 with the marker "O"
-const Player2 = playerFactory("Alexey", "O");
-
-welcomePlayerOne.init()
+const Player2 = playerFactory("Player Two", "O");
 
 // Creating of field filld with field-items
 gameBoard.init()
@@ -115,33 +109,80 @@ gameBoard.init()
 // Filling a game board with gameArray's elements
 gameBoard.fillBoard(gameBoard.gameArray)
 
-let currentPlayer = Player1;
+let currentPlayer = Player1
 gameBoard.showWhosTurn(currentPlayer)
 
-document.querySelector(".field").addEventListener("click", function(e) {
-  gameBoard.showWhosTurn(currentPlayer)
+document.querySelector(".container").addEventListener("click", function(e) {
+  if (e.target.className == "field-item") {
+    if (!gameBoard.gameArray[e.target.attributes.dataKey.value]) {
+      if (e.target.className === "field-item") {
+        gameBoard.placeMarker(e, currentPlayer.marker)
+      }
 
-  if (!gameBoard.gameArray[e.target.attributes.dataKey.value]) {
+      if (gameBoard.winCheck(currentPlayer, gameBoard.gameArray)) {
+        gameBoard.showAlert(`${currentPlayer.name} has won!`, "success")
 
-    if (e.target.className === "field-item") {
-      gameBoard.placeMarker(e, currentPlayer.marker)
-    }
+        for (let i = 0; i < 9; i++) {
+          if (!gameBoard.gameArray[i]) {
+            gameBoard.gameArray[i] = " "
+          }
+        }
 
-    if (gameBoard.winCheck(currentPlayer, gameBoard.gameArray)) {
-      gameBoard.showAlert(`${currentPlayer.name} has won!`, "success")
-    }
+        if (document.querySelector(".playerOne")) {
+          document.querySelector(".playerOne").remove()
+        } else {
+          document.querySelector(".playerTwo").remove()
+        }
 
-    if (gameBoard.tieCheck(gameBoard.gameArray) && !gameBoard.winCheck(currentPlayer, gameBoard.gameArray)) {
-      gameBoard.showAlert("It's a tie!", "tie")
-    }
+        gameBoard.reset()
+      }
 
+      if (gameBoard.tieCheck(gameBoard.gameArray) && !gameBoard.winCheck(currentPlayer, gameBoard.gameArray)) {
+        gameBoard.showAlert("It's a tie!", "tie")
+      }
 
-
-    if (currentPlayer == Player1) {
-      currentPlayer = Player2
-    } else {
-      currentPlayer = Player1
+      if (currentPlayer == Player1) {
+        currentPlayer = Player2
+        if (document.querySelector(".playerOne")) {
+          document.querySelector(".playerOne").textContent = "Player Two's turn"
+          document.querySelector(".playerOne").className = "playerTwo"
+          document.querySelector(".playerTwo").classList.remove("playerOne")
+        }
+      } else {
+        currentPlayer = Player1
+        if (document.querySelector(".playerTwo")) {
+          document.querySelector(".playerTwo").textContent = "Player One's turn"
+          document.querySelector(".playerTwo").className = "playerOne"
+          document.querySelector(".playerOne").classList.remove("playerTwo")
+        }
+      }
     }
   }
 })
+
+document.querySelector(".container").addEventListener("click", function(e) {
+  if (e.target.className == "reset") {
+    gameBoard.gameArray = []
+    document.querySelector(".field").remove()
+    gameBoard.init()
+    document.querySelector(".reset").remove()
+    document.querySelector(".success").remove()
+    gameBoard.showWhosTurn(currentPlayer)
+    currentPlayer = Player1
+    document.querySelector(".playerTwo").textContent = "Player One's turn"
+    document.querySelector(".playerTwo").className = "playerOne"
+    document.querySelector(".playerOne").classList.remove("playerTwo")
+  }
+})
+
+
+
+
+
+
+
+
+
+
+
 
